@@ -55,8 +55,7 @@ describe('makeRefObj', () => {
       }
     ];
     const output = makeRefObj(input);
-    expect(output).to.have.keys('Test')
-    expect(output.Test).to.equal(1);
+    expect(output).to.deep.equal({ Test: 1 })
   });
   it('Functionality should work for more than one object passed in an array', () => {
     const input = [
@@ -70,8 +69,51 @@ describe('makeRefObj', () => {
       }
     ];
     const output = makeRefObj(input);
-    expect(output).to.have.keys("Test", "Test2");
+    expect(output).to.deep.equal({ Test: 1, Test2: 2 })
   });
 });
 
-describe('formatComments', () => {});
+describe('formatComments', () => {
+  it('it returns a new empty array when passed an empty array', () => {
+    expect(formatComments([])).to.eql([])
+    expect(formatComments([])).to.not.equal([])
+  });
+  it('returns new object with all correctly formatted required keys from array when passed single object in array', () => {
+    const input = [{
+      comment_id: 1,
+      body: 'test body',
+      created_by: 'random_user',
+      belongs_to: 'belong',
+      created_at: 1511354163389
+    }];
+    const articleRef = {belong: 1}
+    const output = formatComments(input, articleRef)
+    expect(output[0]).to.have.keys('author', 'comment_id', 'created_at', 'article_id', 'body');
+    expect(output[0].created_at).to.be.instanceOf(Date);
+    expect(output[0].author).to.equal('random_user')
+    expect(output[0].article_id).to.equal(1)
+  });
+  it('returns new object with all correctly formatted required keys from array when passed multiple objects in the array', () => {
+    const input = [{
+      comment_id: 1,
+      body: 'test body',
+      created_by: 'random_user',
+      belongs_to: 'belong',
+      created_at: 1511354163389
+    },{
+      comment_id: 2,
+      body: 'test body',
+      created_by: 'random_author',
+      belongs_to: 'random_topic',
+      created_at: 1511354163389
+    }
+  ];
+    const articleRef = {belong: 1, random_topic: 2}
+    const output = formatComments(input, articleRef)
+    expect(output[1]).to.have.keys('author', 'comment_id', 'created_at', 'article_id', 'body');
+    expect(output[1].created_at).to.be.instanceOf(Date);
+    expect(output[1].author).to.equal('random_author')
+    expect(output[1].article_id).to.equal(2)
+  });
+
+});

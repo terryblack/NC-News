@@ -5,9 +5,8 @@ const { expect } = chai;
 const app = require('../app');
 const connection = require('../db/connection');
 
-after(() => {
-  connection.destroy();
-});
+beforeEach(() => connection.seed.run());
+after(() => connection.destroy());
 
 describe('----API ENDPOINTS----', () => {
   describe('Errors', () => {
@@ -18,6 +17,18 @@ describe('----API ENDPOINTS----', () => {
         .then(({ body: { message } }) => {
           expect(message).to.equal('Path not found');
         });
+    });
+  });
+  describe('/topics', () => {
+    describe('method: GET', () => {
+      it('status:200 & returns all topics', () => {
+        return request(app)
+          .get('/api/topics')
+          .expect(200)
+          .then(({ body: { topics } }) => {
+            expect(topics).to.be.an('Array');
+          });
+      });
     });
   });
 });

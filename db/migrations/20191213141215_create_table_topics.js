@@ -8,7 +8,7 @@ exports.up = function(knex) {
 };
 
 exports.down = function(knex) {
-    console.log('dropping topics')
+    // console.log('dropping topics')
     return knex.schema.dropTable('topics')
   
 };

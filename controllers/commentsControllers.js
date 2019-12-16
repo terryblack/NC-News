@@ -1,4 +1,4 @@
-const { addNewComment } = require('../models/commentsModels');
+const { addNewComment, fetchArticleComments } = require('../models/commentsModels');
 
 exports.postNewComment = (req, res, next) => {
   addNewComment(req.params, req.body)
@@ -7,3 +7,7 @@ exports.postNewComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getArticleComments = (req, res, next) => {
+  fetchArticleComments()
+}

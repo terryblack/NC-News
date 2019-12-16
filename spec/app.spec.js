@@ -31,6 +31,20 @@ describe('API ENDPOINTS --> /api', () => {
           });
       });
     });
+    describe('Invalid Method Error', () => {
+      it('status:405, invalid method used on endpoint', () => {
+        const methods = ['patch', 'put', 'delete'];
+        const promises = methods.map(function(method) {
+          return request(app)
+            [method]('/api/users/topics')
+            .expect(405)
+            .then(({ body: { message } }) => {
+              expect(message).to.equal('Invalid method');
+            });
+        });
+        return Promise.all(promises);
+      });
+    });
   });
   describe('/users/:username', () => {
     describe('method: GET', () => {
@@ -39,7 +53,7 @@ describe('API ENDPOINTS --> /api', () => {
           .get('/api/users/icellusedkars')
           .expect(200)
           .then(({ body: { user } }) => {
-            expect(user[0]).to.have.keys("username", "avatar_url", "name");
+            expect(user).to.have.keys('username', 'avatar_url', 'name');
           });
       });
       describe('Invalid Method Error', () => {
@@ -55,6 +69,18 @@ describe('API ENDPOINTS --> /api', () => {
           });
           return Promise.all(promises);
         });
+      });
+    });
+  });
+  describe('/articles/:article_id', () => {
+    describe('method: GET', () => {
+      it('status:200 & returns requested article from DB', () => {
+        return request(app)
+          .get('/api/articles/1')
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).to.be.have.keys('author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes', 'comment_count');
+          });
       });
     });
   });

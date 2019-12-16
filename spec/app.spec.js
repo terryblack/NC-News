@@ -8,8 +8,8 @@ const connection = require('../db/connection');
 beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
 
-describe('----API ENDPOINTS----', () => {
-  describe('Errors', () => {
+describe('API ENDPOINTS --> /api', () => {
+  describe('404 Path Error', () => {
     it('status:404, PATH NOT FOUND', () => {
       return request(app)
         .get('/invalid_path!!!')
@@ -27,7 +27,34 @@ describe('----API ENDPOINTS----', () => {
           .expect(200)
           .then(({ body: { topics } }) => {
             expect(topics).to.be.an('Array');
+            expect(topics[0]).to.have.keys('slug', 'description');
           });
+      });
+    });
+  });
+  describe('/users/:username', () => {
+    describe('method: GET', () => {
+      it('status:200 & returns requested username from DB', () => {
+        return request(app)
+          .get('/api/users/icellusedkars')
+          .expect(200)
+          .then(({ body: { user } }) => {
+            expect(user[0]).to.have.keys("username", "avatar_url", "name");
+          });
+      });
+      describe('Invalid Method Error', () => {
+        it('status:405, invalid method used on endpoint', () => {
+          const methods = ['patch', 'put', 'delete'];
+          const promises = methods.map(function(method) {
+            return request(app)
+              [method]('/api/users/testusername')
+              .expect(405)
+              .then(({ body: { message } }) => {
+                expect(message).to.equal('Invalid method');
+              });
+          });
+          return Promise.all(promises);
+        });
       });
     });
   });

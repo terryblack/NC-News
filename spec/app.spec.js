@@ -163,5 +163,15 @@ describe('API ENDPOINTS --> /api', () => {
           });
       });
     });
+    describe('---method: GET', () => {
+      it('status:200 & should return an array of comments for the given article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(({body: {comments}}) => {
+          expect(comments).to.have.a.lengthOf(13)
+        })
+      });
+    });
   });
 });

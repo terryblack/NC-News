@@ -1,4 +1,4 @@
-const knex = require("../db/connection");
+const knex = require('../db/connection');
 
 exports.addNewComment = ({ article_id }, comment) => {
   const newComment = {
@@ -9,11 +9,19 @@ exports.addNewComment = ({ article_id }, comment) => {
 
   return knex
     .insert(newComment)
-    .into("comments")
-    .returning("*")
+    .into('comments')
+    .returning('*')
     .then(comment => {
       return comment[0];
     });
 };
 
-exports.fetchArticleComments = () => {};
+exports.fetchArticleComments = ({ article_id }) => {
+  return knex
+    .from('comments')
+    .select('*')
+    .where('article_id', article_id)
+    .then(comments => {
+      return comments;
+    });
+};

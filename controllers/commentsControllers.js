@@ -9,5 +9,7 @@ exports.postNewComment = (req, res, next) => {
 };
 
 exports.getArticleComments = (req, res, next) => {
-  fetchArticleComments()
-}
+  fetchArticleComments(req.params).then(comments => {
+    res.status(200).send({ comments });
+  });
+};

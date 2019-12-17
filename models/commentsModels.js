@@ -16,7 +16,7 @@ exports.addNewComment = ({ article_id }, comment) => {
     });
 };
 
-exports.fetchArticleComments = ({ article_id}, {sort_by = 'created_at', order = 'desc' }) => {
+exports.fetchArticleComments = ({ article_id }, { sort_by = 'created_at', order = 'desc' }) => {
   return knex
     .from('comments')
     .select('*')
@@ -24,5 +24,16 @@ exports.fetchArticleComments = ({ article_id}, {sort_by = 'created_at', order = 
     .orderBy(sort_by, order)
     .then(comments => {
       return comments;
+    });
+};
+
+exports.updateCommentById = ({ comment_id }, { inc_votes }) => {
+  return knex
+    .from('comments')
+    .where('comment_id', comment_id)
+    .increment('votes', inc_votes)
+    .returning('*')
+    .then(updatedComment => {
+      return updatedComment[0];
     });
 };

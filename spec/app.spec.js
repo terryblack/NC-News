@@ -279,4 +279,18 @@ describe('API ENDPOINTS --> /api', () => {
       });
     });
   });
+  describe('ENDPOINT /comments/:comment_id', () => {
+    describe('method: PATCH', () => {
+      it('status:201 & increments or decrements the vote count & responds with updated comment', () => {
+        return request(app)
+        .patch('/api/comments/1')
+        .send({inc_votes: 84})
+        .expect(200)
+        .then(({body: {updatedComment}})=> {
+          expect(updatedComment.comment_id).to.equal(1)
+          expect(updatedComment.votes).to.equal(100)
+        })
+      });
+    });
+  });
 });

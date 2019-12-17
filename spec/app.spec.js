@@ -1,9 +1,11 @@
 process.env.NODE_ENV = 'test';
 const request = require('supertest');
 const chai = require('chai');
+const chaiSorted = require('chai-sorted');
 const { expect } = chai;
 const app = require('../app');
 const connection = require('../db/connection');
+chai.use(chaiSorted);
 
 beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
@@ -166,10 +168,47 @@ describe('API ENDPOINTS --> /api', () => {
     describe('---method: GET', () => {
       it('status:200 & should return an array of comments for the given article_id', () => {
         return request(app)
-        .get('/api/articles/1/comments')
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments).to.have.a.lengthOf(13);
+            expect(comments[0]).to.contain.keys('comment_id', 'votes', 'created_at', 'author', 'body');
+          });
+      });
+      it('status:200 & should return comments in descending order of created_by as default', () => {
+        return request(app)
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments).to.be.descendingBy('created_at');
+          });
+      });
+      it('status:200 & should accept a query and order results by query parameters', () => {
+        return request(app)
+          .get('/api/articles/1/comments?sort_by=votes&&order=asc')
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments).to.be.ascendingBy('votes');
+          });
+      });
+      it('status:400 when passed an invalid sort by column', () => {
+        return request(app)
+          .get('/api/articles/1/comments?sort_by=non_existent_column')
+          .expect(400)
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Bad request')
+          });
+      });
+    });
+  });
+  describe('ENDPOINT /articles', () => {
+    describe('method: GET', () => {
+      it('status:200 returns an array of article objects', () => {
+        return request(app)
+        .get('/api/articles')
         .expect(200)
-        .then(({body: {comments}}) => {
-          expect(comments).to.have.a.lengthOf(13)
+        .then(({body: {articles}})=> {
+          expect(articles).to.be.an('Array')
         })
       });
     });

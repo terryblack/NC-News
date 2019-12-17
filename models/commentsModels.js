@@ -16,11 +16,12 @@ exports.addNewComment = ({ article_id }, comment) => {
     });
 };
 
-exports.fetchArticleComments = ({ article_id }) => {
+exports.fetchArticleComments = ({ article_id}, {sort_by = 'created_at', order = 'desc' }) => {
   return knex
     .from('comments')
     .select('*')
     .where('article_id', article_id)
+    .orderBy(sort_by, order)
     .then(comments => {
       return comments;
     });

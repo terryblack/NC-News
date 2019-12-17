@@ -37,3 +37,14 @@ exports.updateCommentById = ({ comment_id }, { inc_votes }) => {
       return updatedComment[0];
     });
 };
+
+exports.removeCommentById = ({ comment_id }) => {
+  return knex
+    .from('comments')
+    .where('comment_id', comment_id)
+    .delete()
+    .then(deletedCount => {
+      if (deletedCount === 0) return Promise.reject({ status: 404, message: 'Comment does not exist' });
+      else return deletedCount;
+    });
+};

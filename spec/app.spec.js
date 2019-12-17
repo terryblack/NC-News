@@ -280,16 +280,31 @@ describe('API ENDPOINTS --> /api', () => {
     });
   });
   describe('ENDPOINT /comments/:comment_id', () => {
-    describe('method: PATCH', () => {
+    describe('---method: PATCH', () => {
       it('status:201 & increments or decrements the vote count & responds with updated comment', () => {
         return request(app)
-        .patch('/api/comments/1')
-        .send({inc_votes: 84})
-        .expect(200)
-        .then(({body: {updatedComment}})=> {
-          expect(updatedComment.comment_id).to.equal(1)
-          expect(updatedComment.votes).to.equal(100)
-        })
+          .patch('/api/comments/1')
+          .send({ inc_votes: -16 })
+          .expect(200)
+          .then(({ body: { updatedComment } }) => {
+            expect(updatedComment.comment_id).to.equal(1);
+            expect(updatedComment.votes).to.equal(0);
+          });
+      });
+    });
+    describe('---method: DELETE', () => {
+      it('status:204 & removes the comment from the dB based on comment_id', () => {
+        return request(app)
+          .delete('/api/comments/1')
+          .expect(204);
+      });
+      it('status:404 & responds with the comment does not exist', () => {
+        return request(app)
+          .delete('/api/comments/9999999')
+          .expect(404)
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Comment does not exist');
+          });
       });
     });
   });

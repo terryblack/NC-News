@@ -3,8 +3,8 @@ exports.handle404s = (req, res, next) => {
   res.status(404).send({ message: 'Path not found' });
 };
 
-exports.custom404s = (err, req, res, next) => {
-  if ((err.status = '404')) res.status(404).send({ message: err.message });
+exports.customErrors = (err, req, res, next) => {
+  if (err.code) res.status(err.status).send({ message: err.message });
   else next(err);
 };
 

@@ -164,6 +164,17 @@ describe('API ENDPOINTS --> /api', () => {
             expect(message).to.equal('Bad request');
           });
       });
+      // it('status:400 bad request when provided without username', () => {
+      //   return request(app)
+      //     .post('/api/articles/1/comments')
+      //     .send({
+      //       body: 'New comment to be added to article'
+      //     })
+      //     .expect(400)
+      //     .then(({ body: { message } }) => {
+      //       expect(message).to.equal('Bad request');
+      //     });
+      // });
     });
     describe('---method: GET', () => {
       it('status:200 & should return an array of comments for the given article_id', () => {

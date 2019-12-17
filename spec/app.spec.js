@@ -196,20 +196,86 @@ describe('API ENDPOINTS --> /api', () => {
           .get('/api/articles/1/comments?sort_by=non_existent_column')
           .expect(400)
           .then(({ body: { message } }) => {
-            expect(message).to.equal('Bad request')
+            expect(message).to.equal('Bad request');
           });
       });
     });
   });
   describe('ENDPOINT /articles', () => {
-    describe('method: GET', () => {
+    describe('---method: GET', () => {
       it('status:200 returns an array of article objects', () => {
         return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then(({body: {articles}})=> {
-          expect(articles).to.be.an('Array')
-        })
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('Array');
+          });
+      });
+      it('status:200 returns an array of article objects and each object should have a comment_count key', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article).to.contain.key('comment_count');
+            });
+          });
+      });
+      it('status:200 accepts sorty_by & order queries which are defaulted to date & descending', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.descendingBy('created_at');
+          });
+      });
+      it('status:200 sorts objects by query filter & order', () => {
+        return request(app)
+          .get('/api/articles?sort_by=author&&order=asc')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.ascendingBy('author');
+          });
+      });
+      it('status:200 filters by author passed into query', () => {
+        return request(app)
+          .get('/api/articles?author=icellusedkars')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.author).to.equal('icellusedkars');
+            });
+          });
+      });
+      it('status:200 filters by topic passed into query', () => {
+        return request(app)
+          .get('/api/articles?topic=mitch')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach(article => {
+              expect(article.topic).to.equal('mitch');
+            });
+          });
+      });
+      it('status:400 when passed an invalid sort by column', () => {
+        return request(app)
+          .get('/api/articles/1/comments?sort_by=non_existent_column')
+          .expect(400)
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Bad request');
+          });
+      });
+      it('status:405, invalid method used on endpoint', () => {
+        const methods = ['put', 'delete', 'post'];
+        const promises = methods.map(function(method) {
+          return request(app)
+            [method]('/api/articles')
+            .expect(405)
+            .then(({ body: { message } }) => {
+              expect(message).to.equal('Method not allowed on this path');
+            });
+        });
+        return Promise.all(promises);
       });
     });
   });

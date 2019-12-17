@@ -1,4 +1,4 @@
-const knex = require('../db/connection');
+const knex = require("../db/connection");
 
 exports.addNewComment = ({ article_id }, comment) => {
   const newComment = {
@@ -9,18 +9,18 @@ exports.addNewComment = ({ article_id }, comment) => {
 
   return knex
     .insert(newComment)
-    .into('comments')
-    .returning('*')
+    .into("comments")
+    .returning("*")
     .then(comment => {
       return comment[0];
     });
 };
 
-exports.fetchArticleComments = ({ article_id }, { sort_by = 'created_at', order = 'desc' }) => {
+exports.fetchArticleComments = ({ article_id }, { sort_by = "created_at", order = "desc" }) => {
   return knex
-    .from('comments')
-    .select('*')
-    .where('article_id', article_id)
+    .from("comments")
+    .select("*")
+    .where("article_id", article_id)
     .orderBy(sort_by, order)
     .then(comments => {
       return comments;
@@ -29,10 +29,10 @@ exports.fetchArticleComments = ({ article_id }, { sort_by = 'created_at', order 
 
 exports.updateCommentById = ({ comment_id }, { inc_votes }) => {
   return knex
-    .from('comments')
-    .where('comment_id', comment_id)
-    .increment('votes', inc_votes)
-    .returning('*')
+    .from("comments")
+    .where("comment_id", comment_id)
+    .increment("votes", inc_votes)
+    .returning("*")
     .then(updatedComment => {
       return updatedComment[0];
     });
@@ -40,11 +40,15 @@ exports.updateCommentById = ({ comment_id }, { inc_votes }) => {
 
 exports.removeCommentById = ({ comment_id }) => {
   return knex
-    .from('comments')
-    .where('comment_id', comment_id)
+    .from("comments")
+    .where("comment_id", comment_id)
     .delete()
     .then(deletedCount => {
-      if (deletedCount === 0) return Promise.reject({ status: 404, message: 'Comment does not exist' });
+      if (deletedCount === 0)
+        return Promise.reject({
+          status: 404,
+          message: "Comment does not exist"
+        });
       else return deletedCount;
     });
 };

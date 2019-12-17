@@ -5,6 +5,7 @@ exports.fetchUserByUsername = username => {
     .from('users')
     .where('username', username)
     .then(user => {
-      return user[0];
+      if (user[0]) return user[0]
+      else return Promise.reject({status:404, message: "User does not exist"})
     });
 };

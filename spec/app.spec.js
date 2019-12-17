@@ -95,6 +95,7 @@ describe("API ENDPOINTS --> /api", () => {
               "votes",
               "comment_count"
             );
+            console.log(article)
             expect(article.comment_count).to.equal("13");
           });
       });

@@ -7,8 +7,8 @@ const {
 
 exports.postNewComment = (req, res, next) => {
   addNewComment(req.params, req.body)
-    .then(postedComment => {
-      res.status(201).send({ postedComment });
+    .then(comment => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };
@@ -23,8 +23,8 @@ exports.getArticleComments = (req, res, next) => {
 
 exports.patchCommentById = (req, res, next) => {
   updateCommentById(req.params, req.body)
-    .then(updatedComment => {
-      res.status(200).send({ updatedComment });
+    .then(comment => {
+      res.status(200).send({ comment });
     })
     .catch(next);
 };

@@ -10,14 +10,16 @@ exports.getArticlesById = (req, res, next) => {
 
 exports.patchArticleById = (req, res, next) => {
   updateArticleById(req.params, req.body.inc_votes)
-    .then(updatedArticle => {
-      res.status(201).send({ updatedArticle });
+    .then(article => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles(req.query).then((articles) => {
-    res.status(200).send({ articles });
-  }).catch(next)
+  fetchArticles(req.query)
+    .then(articles => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };

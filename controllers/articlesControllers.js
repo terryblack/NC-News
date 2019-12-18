@@ -1,8 +1,10 @@
 const { fetchArticleById, updateArticleById, fetchArticles } = require('../models/articlesModels');
+const {checkArticleExists, checkTopicExists, checkAuthorExists} = require('../models/checkHelpers')
 
 exports.getArticlesById = (req, res, next) => {
-  fetchArticleById(req.params.article_id)
-    .then(article => {
+  Promise.all([fetchArticleById(req.params.article_id), checkArticleExists(req.params.article_id)])
+    .then(resolvedPromises => {
+      const article = resolvedPromises[0]
       res.status(200).send({ article });
     })
     .catch(next);
@@ -17,9 +19,13 @@ exports.patchArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles(req.query)
-    .then(articles => {
-      res.status(200).send({ articles });
+  const promiseArray = [fetchArticles(req.query)]
+  if(req.query.topic) promiseArray.push(checkTopicExists(req.query.topic))
+  if(req.query.author) promiseArray.push(checkAuthorExists(req.query.author))
+  Promise.all(promiseArray)
+    .then(resolvedPromises => {
+      const articles = resolvedPromises[0]
+      res.status(200).send({ articles })
     })
     .catch(next);
 };

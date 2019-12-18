@@ -89,6 +89,24 @@ describe('API ENDPOINTS --> /api', () => {
             expect(article.comment_count).to.equal('13');
           });
       });
+      it('status:200 & returns requested article from DB', () => {
+        return request(app)
+          .get('/api/articles/2')
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).to.be.have.keys('author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes', 'comment_count');
+            expect(article.comment_count).to.equal('0');
+          });
+      });
+      it('status:200 & returns requested article from DB', () => {
+        return request(app)
+          .get('/api/articles/1')
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).to.be.have.keys('author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes', 'comment_count');
+            expect(article.comment_count).to.equal('13');
+          });
+      });
       it('status:404 when passed a article ID that is valid but does not exist in db', () => {
         return request(app)
           .get('/api/articles/99')
@@ -107,6 +125,15 @@ describe('API ENDPOINTS --> /api', () => {
           .then(({ body: { article } }) => {
             expect(article.article_id).to.equal(1);
             expect(article.votes).to.equal(199);
+          });
+      });
+      it('status:200 & returns requested article from DB', () => {
+        return request(app)
+          .patch('/api/articles/1')
+          .send({ inc_votes: 99 })
+          .expect(200)
+          .then(({ body: { article } }) => {
+            expect(article).to.be.have.keys('author', 'title', 'article_id', 'body', 'topic', 'created_at', 'votes');
           });
       });
       it('status:405, invalid method used on endpoint', () => {
@@ -151,7 +178,7 @@ describe('API ENDPOINTS --> /api', () => {
     });
   });
   describe('ENDPOINT /articles/:article_id/comments', () => {
-    describe.only('---method: POST', () => {
+    describe('---method: POST', () => {
       it('status:201, posts new comment to DB & responds with added comment ', () => {
         return request(app)
           .post('/api/articles/1/comments')
@@ -299,6 +326,22 @@ describe('API ENDPOINTS --> /api', () => {
           .expect(400)
           .then(({ body: { message } }) => {
             expect(message).to.equal('Bad request');
+          });
+      });
+      it('status:404 when provided a non existent topic', () => {
+        return request(app)
+          .get('/api/articles?topic=XXXX')
+          .expect(404)
+          .then(({body :{message}}) => {
+            expect(message).to.equal('Topic not found')
+          });
+      });
+      it('status:404 when provided a non existent author', () => {
+        return request(app)
+          .get('/api/articles?author=XXXX')
+          .expect(404)
+          .then(({body :{message}}) => {
+            expect(message).to.equal('Author not found')
           });
       });
       it('status:405, invalid method used on endpoint', () => {

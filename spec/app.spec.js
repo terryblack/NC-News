@@ -352,16 +352,16 @@ describe('API ENDPOINTS --> /api', () => {
         return request(app)
           .get('/api/articles?topic=XXXX')
           .expect(404)
-          .then(({body :{message}}) => {
-            expect(message).to.equal('Topic not found')
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Topic not found');
           });
       });
       it('status:404 when provided a non existent author', () => {
         return request(app)
           .get('/api/articles?author=XXXX')
           .expect(404)
-          .then(({body :{message}}) => {
-            expect(message).to.equal('Author not found')
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Author not found');
           });
       });
       it('status:405, invalid method used on endpoint', () => {
@@ -435,6 +435,30 @@ describe('API ENDPOINTS --> /api', () => {
             });
         });
         return Promise.all(promises);
+      });
+    });
+  });
+  describe('ENDPOINT /api', () => {
+    describe('---method: GET', () => {
+      it('status:405, invalid method used on endpoint', () => {
+        const methods = ['patch', 'put', 'delete'];
+        const promises = methods.map(function(method) {
+          return request(app)
+            [method]('/api')
+            .expect(405)
+            .then(({ body: { message } }) => {
+              expect(message).to.equal('Method not allowed on this path');
+            });
+        });
+        return Promise.all(promises);
+      });
+      it('status:200 & returns the endpoints.json data', () => {
+        return request(app)
+          .get('/api')
+          .expect(200)
+          .then(({ body: { endpoints } }) => {
+            expect(endpoints).to.be.an('Object')
+          });
       });
     });
   });

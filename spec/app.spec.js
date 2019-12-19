@@ -157,7 +157,7 @@ describe('API ENDPOINTS --> /api', () => {
             expect(message).to.equal('Bad request');
           });
       });
-      it('status:400 bad request when attmepting to patch to incorrect endpoint', () => {
+      it('status:400 bad request when attempting to patch to incorrect endpoint', () => {
         return request(app)
           .patch('/api/articles/XXX')
           .send({ inc_votes: 99 })
@@ -211,9 +211,9 @@ describe('API ENDPOINTS --> /api', () => {
             username: 99,
             body: 'New comment to be added to article'
           })
-          .expect(400)
+          .expect(422)
           .then(({ body: { message } }) => {
-            expect(message).to.equal('Bad request');
+            expect(message).to.equal('Unprocessable Entity');
           });
       });
       it('status:400 bad request when posting a comment without a username', () => {
@@ -225,6 +225,18 @@ describe('API ENDPOINTS --> /api', () => {
           .expect(400)
           .then(({ body: { message } }) => {
             expect(message).to.equal('Bad request');
+          });
+      });
+      it('status:422 when attempting to post to a valid, but non existent article_id', () => {
+        return request(app)
+          .post('/api/articles/99/comments')
+          .send({
+            username: 99,
+            body: 'New comment to be added to article'
+          })
+          .expect(422)
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Unprocessable Entity');
           });
       });
     });
@@ -260,6 +272,14 @@ describe('API ENDPOINTS --> /api', () => {
           .expect(400)
           .then(({ body: { message } }) => {
             expect(message).to.equal('Bad request');
+          });
+      });
+      it('status:404 when requesting comments from a non existent, but valid article_id', () => {
+        return request(app)
+          .get('/api/articles/999/comments')
+          .expect(404)
+          .then(({ body: { message } }) => {
+            expect(message).to.equal('Article not found');
           });
       });
     });
@@ -403,6 +423,18 @@ describe('API ENDPOINTS --> /api', () => {
           .then(({ body: { message } }) => {
             expect(message).to.equal('Comment does not exist');
           });
+      });
+      it('status:405, invalid method used on endpoint', () => {
+        const methods = ['put', 'post'];
+        const promises = methods.map(function(method) {
+          return request(app)
+            [method]('/api/comments/1')
+            .expect(405)
+            .then(({ body: { message } }) => {
+              expect(message).to.equal('Method not allowed on this path');
+            });
+        });
+        return Promise.all(promises);
       });
     });
   });

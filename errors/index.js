@@ -8,8 +8,14 @@ exports.customErrors = (err, req, res, next) => {
 };
 
 exports.handle400s = (err, req, res, next) => {
-  const errorCodes = ['23502', '22P02', '42703', '23503'];
+  const errorCodes = ['23502', '22P02', '42703'];
   if (errorCodes.includes(err.code)) res.status(400).send({ message: 'Bad request' });
+  else next(err);
+};
+
+exports.handle422s = (err, req, res, next) => {
+  const errorCodes = ["23503"];
+  if (errorCodes.includes(err.code)) res.status(422).send({ message: 'Unprocessable Entity' });
   else next(err);
 };
 

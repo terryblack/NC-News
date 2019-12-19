@@ -1,5 +1,5 @@
 const knex = require('../db/connection');
-exports.fetchArticleById = article_id => {
+exports.fetchArticleById = ({article_id}) => {
   return knex
     .select('articles.*')
     .from('articles')
@@ -14,7 +14,7 @@ exports.fetchArticleById = article_id => {
     });
 };
 
-exports.updateArticleById = ({ article_id }, inc_votes = 0) => {
+exports.updateArticleById = ({ article_id }, {inc_votes = 0}) => {
   return knex
     .from('articles')
     .where('article_id', article_id)

@@ -23,7 +23,9 @@ exports.fetchArticleComments = ({ article_id }, { sort_by = 'created_at', order 
     .where('article_id', article_id)
     .orderBy(sort_by, order)
     .then(comments => {
-      return comments;
+      if (comments.length === 0) {
+        return Promise.reject({ status: 404, message: 'Article not found' });
+      } else return comments;
     });
 };
 

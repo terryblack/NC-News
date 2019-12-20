@@ -11,6 +11,5 @@ apiRouter.use('/topics', topicsRouter);
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/comments', commentsRouter);
-// apiRouter.all(handle405s)
 
 module.exports = apiRouter;
